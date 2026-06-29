@@ -98,57 +98,21 @@ function App() {
         <s-stack gap="base">
           <s-paragraph>
             <s-text>
-              Two checkout behaviors that run automatically on Shopify — no extra
-              hosting, all configured from the discount itself:
+              Two automatic checkout behaviors — configured from the discount itself:
             </s-text>
           </s-paragraph>
           <s-paragraph>
-            <s-text weight="bold">Free item with a code. </s-text>
+            <s-text font-weight="bold">Free item with a code. </s-text>
             <s-text>
-              When a customer applies your discount code, the cheapest eligible
-              item in their cart is discounted to a near-free price. You control
-              which products and customers are excluded, the price, the number of
-              items, and the message.
+              Apply a discount code → cheapest eligible item drops to near-free. You control products, customers, quantity, price, and messaging.
             </s-text>
           </s-paragraph>
           <s-paragraph>
-            <s-text weight="bold">Hide free shipping while the offer is active. </s-text>
+            <s-text font-weight="bold">Hide free shipping while active. </s-text>
             <s-text>
-              When the free-item offer applies to a cart, the shipping rates you
-              choose are hidden at checkout, so the freebie can't be combined with
-              free shipping. It only triggers for this specific offer.
+              When the "VibeSzn — Free Item with Code" discount applies, selected shipping rates are hidden — preventing the freebie from stacking with free shipping.
             </s-text>
           </s-paragraph>
-        </s-stack>
-      </s-section>
-
-      <s-section heading="Set up the discount">
-        <s-stack gap="base">
-          <s-paragraph>
-            <s-text weight="bold">1. Create the discount. </s-text>
-            <s-text>Open </s-text>
-            <s-link href="shopify://admin/discounts">Discounts</s-link>
-            <s-text> → Create discount → choose “VibeSzn — Free Item with Code”.</s-text>
-          </s-paragraph>
-          <s-paragraph>
-            <s-text weight="bold">2. Enter your discount code </s-text>
-            <s-text>(for example, FREEVIP).</s-text>
-          </s-paragraph>
-          <s-paragraph>
-            <s-text weight="bold">3. Fill in the settings </s-text>
-            <s-text>
-              on the discount page: excluded product/customer tags, near-free
-              price, number of items, the message, and the shipping rates to hide.
-            </s-text>
-          </s-paragraph>
-          <s-paragraph>
-            <s-text weight="bold">4. Save the discount.</s-text>
-          </s-paragraph>
-          <s-box>
-            <s-button variant="primary" href="shopify://admin/discounts">
-              Create a discount
-            </s-button>
-          </s-box>
         </s-stack>
       </s-section>
 
@@ -157,9 +121,8 @@ function App() {
           <s-paragraph>
             <s-text>
               Turn this on to let the app remove your chosen shipping rates at
-              checkout whenever the free-item offer is active. It must be enabled
-              once per store. The rates it hides come from the “Shipping rates to
-              hide” field on your discount — there's nothing else to configure here.
+              checkout whenever the "VibeSzn — Free Item with Code" discount is active. The rates it hides come from the “Shipping rates to
+              hide” field on your discount.
             </s-text>
           </s-paragraph>
 
@@ -169,7 +132,7 @@ function App() {
             <s-text>Checking status…</s-text>
           ) : (
             <s-stack direction="inline" gap="base" alignItems="center">
-              <s-text weight="bold">
+              <s-text font-weight="bold">
                 Status: {active ? "Enabled" : "Disabled"}
               </s-text>
               {active ? (
@@ -194,17 +157,50 @@ function App() {
         </s-stack>
       </s-section>
 
+      <s-section heading="Set up the discount">
+        <s-stack gap="base">
+          <s-stack gap="tight">
+            <s-text font-weight="bold">1. Create the discount.</s-text>
+            <s-paragraph>
+              <s-text>&nbsp;&nbsp;&nbsp;Open </s-text>
+              <s-link href="shopify://admin/discounts">Discounts</s-link>
+              <s-text> → Create discount → choose “VibeSzn — Free Item with Code”.</s-text>
+            </s-paragraph>
+          </s-stack>
+          <s-paragraph>
+            <s-text font-weight="bold">2. Enter your discount code </s-text>
+            <s-text>(for example, FREEVIP).</s-text>
+          </s-paragraph>
+          <s-paragraph>
+            <s-text font-weight="bold">3. Fill in the settings </s-text>
+            <s-text>
+              on the discount page: excluded product/customer tags, near-free
+              price, number of items, the message, and the shipping rates to hide.
+            </s-text>
+          </s-paragraph>
+          <s-paragraph>
+            <s-text font-weight="bold">4. Save the discount.</s-text>
+          </s-paragraph>
+          <s-box>
+            <s-button variant="primary" href="shopify://admin/discounts">
+              Create a discount
+            </s-button>
+          </s-box>
+        </s-stack>
+      </s-section>
+
+
       <s-section slot="aside" heading="Good to know">
         <s-stack gap="base">
           <s-paragraph>
             <s-text>
               All configuration lives on the discount. To change anything later,
-              just edit the discount — no redeploy needed.
+              just edit the discount.
             </s-text>
           </s-paragraph>
           <s-paragraph>
             <s-text>
-              The shipping hide is precise: it fires only for this offer, not for
+              The shipping hide is precise: it fires only for "VibeSzn — Free Item with Code" discount, not for
               order-wide discounts or other promotions.
             </s-text>
           </s-paragraph>
