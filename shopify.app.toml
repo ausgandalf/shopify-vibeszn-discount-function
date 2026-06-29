@@ -1,13 +1,13 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-name = "VibeSzn Discount Functions"
+client_id = "788925c2e21b7089cd3f09835b2c614b"
 application_url = "https://shopify.dev/apps/default-app-home"
 embedded = true
-client_id = "c598203cdd89ef2759e6a6c6867106a0"
+name = "VibeSzn Discount Functions"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = ""
+scopes = "write_delivery_customizations,write_discounts"
 
 [auth]
 redirect_urls = [ "https://shopify.dev/apps/default-app-home/api/auth" ]
@@ -16,5 +16,4 @@ redirect_urls = [ "https://shopify.dev/apps/default-app-home/api/auth" ]
 api_version = "2026-07"
 
 [build]
-include_config_on_deploy = true
 automatically_update_urls_on_dev = true

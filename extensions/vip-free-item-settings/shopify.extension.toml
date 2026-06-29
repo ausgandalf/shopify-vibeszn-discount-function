@@ -1,13 +1,20 @@
-api_version = "2025-07"
+api_version = "2026-01"
 
 [[extensions]]
 name = "t:name"
+description = "t:description"
 handle = "vip-free-item-settings"
 uid = "3958e5a6-2318-5122-c8a9-41749dd2be1060edafe2"
 type = "ui_extension"
 
+  # Only 1 target can be specified for each Admin block extension
   [[extensions.targeting]]
   module = "./src/DiscountFunctionSettings.jsx"
   # Renders on the discount details page when a merchant creates/edits a
   # discount powered by the vip-free-item-discount function.
   target = "admin.discount-details.function-settings.render"
+
+  # Declares the app-reserved metafield this UI reads/writes on the discount.
+  [[extensions.metafields]]
+  namespace = "$app:vip-free-item"
+  key = "function-configuration"

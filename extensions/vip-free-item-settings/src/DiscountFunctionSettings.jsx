@@ -1,16 +1,7 @@
-import { useState } from "react";
-import {
-  reactExtension,
-  useApi,
-  FunctionSettings,
-  Section,
-  TextField,
-  NumberField,
-  BlockStack,
-  Text,
-} from "@shopify/ui-extensions-react/admin";
+import "@shopify/ui-extensions/preact";
+import { render } from "preact";
+import { useState } from "preact/hooks";
 
-const TARGET = "admin.discount-details.function-settings.render";
 const NAMESPACE = "$app:vip-free-item";
 const KEY = "function-configuration";
 
@@ -22,11 +13,16 @@ const DEFAULTS = {
   discountMessage: "Free item with this code",
 };
 
-export default reactExtension(TARGET, () => <App />);
+export default async () => {
+  render(<App />, document.body);
+};
 
 function App() {
-  const { applyMetafieldChange, data } = useApi(TARGET);
-  const initial = readInitialConfig(data);
+  const { applyMetafieldChange, data } = shopify;
+
+  const initial = parseConfig(
+    data?.metafields?.find((metafield) => metafield.key === KEY)?.value,
+  );
 
   const [excludedProductTags, setExcludedProductTags] = useState(
     initial.excludedProductTags.join(", "),
@@ -34,69 +30,84 @@ function App() {
   const [excludedCustomerTags, setExcludedCustomerTags] = useState(
     initial.excludedCustomerTags.join(", "),
   );
-  const [nearFreePrice, setNearFreePrice] = useState(initial.nearFreePrice);
-  const [productLimit, setProductLimit] = useState(Number(initial.productLimit));
+  const [nearFreePrice, setNearFreePrice] = useState(String(initial.nearFreePrice));
+  const [productLimit, setProductLimit] = useState(String(initial.productLimit));
   const [discountMessage, setDiscountMessage] = useState(initial.discountMessage);
 
-  async function onSave() {
-    const config = {
-      excludedProductTags: splitTags(excludedProductTags),
-      excludedCustomerTags: splitTags(excludedCustomerTags),
-      nearFreePrice: String(nearFreePrice),
-      productLimit: Number(productLimit) || 1,
-      discountMessage,
-    };
-
+  async function onSubmit() {
     await applyMetafieldChange({
       type: "updateMetafield",
       namespace: NAMESPACE,
       key: KEY,
-      value: JSON.stringify(config),
+      value: JSON.stringify({
+        excludedProductTags: splitTags(excludedProductTags),
+        excludedCustomerTags: splitTags(excludedCustomerTags),
+        nearFreePrice: String(nearFreePrice),
+        productLimit: Number(productLimit) || 1,
+        discountMessage,
+      }),
       valueType: "json",
     });
   }
 
+  function resetForm() {
+    setExcludedProductTags(initial.excludedProductTags.join(", "));
+    setExcludedCustomerTags(initial.excludedCustomerTags.join(", "));
+    setNearFreePrice(String(initial.nearFreePrice));
+    setProductLimit(String(initial.productLimit));
+    setDiscountMessage(initial.discountMessage);
+  }
+
   return (
-    <FunctionSettings onSave={onSave}>
-      <Section>
-        <BlockStack gap="base">
-          <Text fontWeight="bold">Free item offer</Text>
-          <TextField
+    <s-function-settings
+      onSubmit={(event) => {
+        event.waitUntil?.(onSubmit());
+      }}
+      onReset={resetForm}
+    >
+      <s-heading>Free item offer</s-heading>
+      <s-section>
+        <s-stack gap="base">
+          <s-text-field
             label="Excluded product tags (comma-separated)"
+            name="excludedProductTags"
             value={excludedProductTags}
-            onChange={setExcludedProductTags}
+            onChange={(event) => setExcludedProductTags(event.currentTarget.value)}
           />
-          <TextField
+          <s-text-field
             label="Excluded customer tags (comma-separated)"
+            name="excludedCustomerTags"
             value={excludedCustomerTags}
-            onChange={setExcludedCustomerTags}
+            onChange={(event) => setExcludedCustomerTags(event.currentTarget.value)}
           />
-          <TextField
+          <s-text-field
             label="Near-free price (per item)"
+            name="nearFreePrice"
             value={nearFreePrice}
-            onChange={setNearFreePrice}
+            onChange={(event) => setNearFreePrice(event.currentTarget.value)}
           />
-          <NumberField
+          <s-number-field
             label="Number of items to discount"
-            value={Number(productLimit)}
-            onChange={setProductLimit}
+            name="productLimit"
+            value={String(productLimit)}
+            min={1}
+            onChange={(event) => setProductLimit(event.currentTarget.value)}
           />
-          <TextField
+          <s-text-field
             label="Discount message"
+            name="discountMessage"
             value={discountMessage}
-            onChange={setDiscountMessage}
+            onChange={(event) => setDiscountMessage(event.currentTarget.value)}
           />
-        </BlockStack>
-      </Section>
-    </FunctionSettings>
+        </s-stack>
+      </s-section>
+    </s-function-settings>
   );
 }
 
-function readInitialConfig(data) {
+function parseConfig(value) {
   try {
-    const metafield = data?.metafields?.find((m) => m.key === KEY);
-    if (!metafield?.value) return { ...DEFAULTS };
-    const parsed = JSON.parse(metafield.value);
+    const parsed = JSON.parse(value || "{}");
     return {
       excludedProductTags: parsed.excludedProductTags ?? DEFAULTS.excludedProductTags,
       excludedCustomerTags: parsed.excludedCustomerTags ?? DEFAULTS.excludedCustomerTags,
