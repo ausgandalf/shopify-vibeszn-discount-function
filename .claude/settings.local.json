@@ -18,7 +18,8 @@
       "PowerShell(npm exec -- shopify app generate extension -t discount_details_function_settings --flavor react -n ref-settings 2>&1)",
       "PowerShell(npm exec -- shopify app generate extension -t discount_details_function_settings -n ref-settings 2>&1)",
       "PowerShell(npm exec -- shopify app function build --path extensions/vip-free-item-discount 2>&1)",
-      "PowerShell(npm exec -- shopify app build 2>&1)"
+      "PowerShell(npm exec -- shopify app build 2>&1)",
+      "PowerShell(npm exec -- shopify app function typegen --path extensions/hide-free-shipping 2>&1)"
     ]
   }
 }

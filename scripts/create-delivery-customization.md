@@ -2,21 +2,24 @@
 
 Unlike discounts, a delivery-customization **function** does not auto-appear in the
 admin — you must create one `DeliveryCustomization` instance that points at the
-function and carries its configuration metafield. This is a **one-time** Admin API
-call per store. No hosting required.
+function so it runs at checkout. This is a **one-time** Admin API call per store.
+No hosting required.
+
+> **Configuration note:** the rate names to hide are NOT set here. They live in
+> the **discount settings form** (`hideRateNames`), and the shipping function reads
+> them from the active discount at checkout. So this mutation only needs to
+> *enable* the function — no metafield required.
 
 ## Prerequisites
 
-- The app is installed on the store and `shopify app deploy` has run (so the
-  `hide-free-shipping` function exists and has a stable **function handle**).
-- A way to run an authenticated Admin GraphQL call. Easiest options:
-  - Install Shopify's **Shopify GraphiQL App** on the store, or
-  - Use an Admin API access token with `curl` / Postman.
+- The app is installed and `shopify app deploy` has run (so the
+  `hide-free-shipping` function exists with a stable **function handle**).
+- A way to run an authenticated Admin GraphQL call — easiest is the
+  **Shopify GraphiQL App** installed on the store.
 
-## 1. Find the function ID (only if your API version < 2025-10)
+## 1. Find the function ID (skip on API version 2025-10+)
 
-On 2025-10+ you can pass the stable function **handle** directly, so you can skip
-this. Otherwise look it up:
+On 2025-10+ you can pass the stable function **handle** directly. Otherwise:
 
 ```graphql
 query {
@@ -26,13 +29,9 @@ query {
 }
 ```
 
-Find the node whose `apiType` is `delivery_customization`.
+Use the node whose `apiType` is `delivery_customization`.
 
-## 2. Create the delivery customization with its config
-
-Replace `functionId` with the function ID (or use `functionHandle:
-"hide-free-shipping"` on 2025-10+). The metafield value is the config the function
-reads at runtime.
+## 2. Create (enable) the delivery customization
 
 ```graphql
 mutation {
@@ -41,14 +40,6 @@ mutation {
       functionId: "REPLACE_WITH_FUNCTION_ID"
       title: "Hide free shipping for VIP code"
       enabled: true
-      metafields: [
-        {
-          namespace: "$app:hide-free-shipping"
-          key: "function-configuration"
-          type: "json"
-          value: "{\"hideRateNames\":[\"free domestic\",\"Free International\"],\"minAllocatedAmount\":\"0\"}"
-        }
-      ]
     }
   ) {
     deliveryCustomization { id }
@@ -57,29 +48,22 @@ mutation {
 }
 ```
 
-## 3. Update the config later
+That's it — no metafields. To change which rates are hidden, edit the
+**Shipping rates to hide** field in the discount's settings form in admin.
+
+## Enable / disable later
 
 ```graphql
 mutation {
   deliveryCustomizationUpdate(
     id: "gid://shopify/DeliveryCustomization/XXXXXXXX"
-    deliveryCustomization: {
-      metafields: [
-        {
-          namespace: "$app:hide-free-shipping"
-          key: "function-configuration"
-          type: "json"
-          value: "{\"hideRateNames\":[\"free domestic\",\"Free International\"]}"
-        }
-      ]
-    }
+    deliveryCustomization: { enabled: false }
   ) {
-    deliveryCustomization { id }
+    deliveryCustomization { id enabled }
     userErrors { field message }
   }
 }
 ```
 
-> `hideRateNames` are matched case-insensitively against each delivery option's
-> title. Make sure they match the rate names in **Settings → Shipping and
-> delivery**.
+> Rate names are matched case-insensitively against each delivery option's title,
+> so make them match the rate names in **Settings → Shipping and delivery**.

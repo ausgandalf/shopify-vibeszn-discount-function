@@ -1,24 +1,22 @@
-# Configuration (which rate names to hide) is read from a metafield on the
-# delivery customization itself — set once via deliveryCustomizationCreate
-# (see scripts/create-delivery-customization.md).
+# All config (including which rate names to hide) lives on the DISCOUNT's
+# settings metafield. The delivery API can't read the discount code, but each
+# line's discountApplication exposes that discount's metafield — so we read the
+# rate names straight from the offer that triggered the cart. No separate config.
 query Input {
-  deliveryCustomization {
-    metafield(namespace: "$app:hide-free-shipping", key: "function-configuration") {
-      value
-    }
-  }
   cart {
     lines {
-      # The delivery customization API CANNOT read discount codes. We instead
-      # detect that a product discount (the "free item" offer) is active by the
-      # presence of a line-level discount allocation.
       discountAllocations {
-        discountedAmount {
-          amount
-        }
         discountApplication {
-          targetType
-          targetSelection
+          # Non-null only when this allocation comes from OUR free-item discount
+          # (it's the only discount carrying this app-reserved metafield). Its
+          # value is the discount's full config JSON, which also holds the
+          # merchant-edited `hideRateNames` from the discount settings form.
+          freeItemConfig: metafield(
+            namespace: "$app:vip-free-item"
+            key: "function-configuration"
+          ) {
+            value
+          }
         }
       }
     }

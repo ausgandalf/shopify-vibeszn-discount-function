@@ -11,6 +11,7 @@ const DEFAULTS = {
   nearFreePrice: "0.01",
   productLimit: 1,
   discountMessage: "Free item with this code",
+  hideRateNames: ["free domestic", "Free International"],
 };
 
 export default async () => {
@@ -33,6 +34,7 @@ function App() {
   const [nearFreePrice, setNearFreePrice] = useState(String(initial.nearFreePrice));
   const [productLimit, setProductLimit] = useState(String(initial.productLimit));
   const [discountMessage, setDiscountMessage] = useState(initial.discountMessage);
+  const [hideRateNames, setHideRateNames] = useState(initial.hideRateNames.join(", "));
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
@@ -63,6 +65,7 @@ function App() {
         nearFreePrice: String(nearFreePrice),
         productLimit: Number(productLimit) || 1,
         discountMessage,
+        hideRateNames: splitTags(hideRateNames),
       }),
       valueType: "json",
     });
@@ -74,6 +77,7 @@ function App() {
     setNearFreePrice(String(initial.nearFreePrice));
     setProductLimit(String(initial.productLimit));
     setDiscountMessage(initial.discountMessage);
+    setHideRateNames(initial.hideRateNames.join(", "));
   }
 
   if (loading) {
@@ -121,6 +125,12 @@ function App() {
             name="discountMessage"
             value={discountMessage}
             onChange={(event) => setDiscountMessage(event.currentTarget.value)}
+          />
+          <s-text-field
+            label="Shipping rates to hide while this offer is active (comma-separated)"
+            name="hideRateNames"
+            value={hideRateNames}
+            onChange={(event) => setHideRateNames(event.currentTarget.value)}
           />
         </s-stack>
       </s-section>
@@ -182,6 +192,7 @@ function parseConfig(value) {
       nearFreePrice: parsed.nearFreePrice ?? DEFAULTS.nearFreePrice,
       productLimit: parsed.productLimit ?? DEFAULTS.productLimit,
       discountMessage: parsed.discountMessage ?? DEFAULTS.discountMessage,
+      hideRateNames: parsed.hideRateNames ?? DEFAULTS.hideRateNames,
     };
   } catch {
     return { ...DEFAULTS };
