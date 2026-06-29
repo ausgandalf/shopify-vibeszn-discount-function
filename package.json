@@ -10,6 +10,7 @@
     "generate": "shopify app generate extension"
   },
   "dependencies": {
+    "@shopify/shopify_function": "~2.0.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-reconciler": "^0.33.0"

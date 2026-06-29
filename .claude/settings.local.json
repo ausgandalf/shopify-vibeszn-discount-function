@@ -11,7 +11,10 @@
       "PowerShell(Get-ChildItem -Recurse -File -Path \"D:\\\\projects\\\\adam\\\\extension\" | Where-Object { $_.FullName -notmatch 'node_modules' } | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\projects\\\\adam\\\\extension\\\\\",\"\"\\) } | Sort-Object)",
       "PowerShell(npm install 2>&1)",
       "PowerShell(npm exec -- shopify app function typegen --path extensions/vip-free-item-discount 2>&1)",
-      "PowerShell(shopify app generate extension --help 2>&1)"
+      "PowerShell(shopify app generate extension --help 2>&1)",
+      "PowerShell(npm exec -- shopify app generate extension -t discount --flavor vanilla-js -n ref-discount 2>&1)",
+      "PowerShell(npm exec -- shopify app generate extension -t delivery_customization --flavor vanilla-js -n ref-delivery 2>&1)",
+      "PowerShell(npm exec -- shopify app function build --path extensions/hide-free-shipping 2>&1)"
     ]
   }
 }

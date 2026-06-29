@@ -29,7 +29,7 @@ export function cartDeliveryOptionsTransformRun(input) {
   // Is a qualifying product discount active on any line?
   const discountActive = input.cart.lines.some((line) =>
     (line.discountAllocations || []).some(
-      (alloc) => Number(alloc.allocatedAmount?.amount) > minAllocated,
+      (alloc) => Number(alloc.discountedAmount?.amount) > minAllocated,
     ),
   );
   if (!discountActive) return NO_CHANGES;

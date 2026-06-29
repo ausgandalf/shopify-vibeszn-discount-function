@@ -13,7 +13,7 @@ query Input {
       # detect that a product discount (the "free item" offer) is active by the
       # presence of a line-level discount allocation.
       discountAllocations {
-        allocatedAmount {
+        discountedAmount {
           amount
         }
       }
