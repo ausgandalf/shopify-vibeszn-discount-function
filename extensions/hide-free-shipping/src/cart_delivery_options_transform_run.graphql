@@ -16,6 +16,10 @@ query Input {
         discountedAmount {
           amount
         }
+        discountApplication {
+          targetType
+          targetSelection
+        }
       }
     }
     deliveryGroups {

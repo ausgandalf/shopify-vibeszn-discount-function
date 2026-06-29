@@ -26,11 +26,20 @@ export function cartDeliveryOptionsTransformRun(input) {
 
   const minAllocated = Number(config.minAllocatedAmount) || 0;
 
-  // Is a qualifying product discount active on any line?
+  // Is a qualifying LINE-ITEM (product) discount active on any line?
+  // We deliberately ignore order-wide discounts: Shopify spreads an
+  // "amount off entire order" discount across the line items as allocations,
+  // but those carry targetSelection === "ALL". The free-item offer targets a
+  // specific line, so its allocation is "ENTITLED"/"EXPLICIT".
   const discountActive = input.cart.lines.some((line) =>
-    (line.discountAllocations || []).some(
-      (alloc) => Number(alloc.discountedAmount?.amount) > minAllocated,
-    ),
+    (line.discountAllocations || []).some((alloc) => {
+      const application = alloc.discountApplication;
+      return (
+        application?.targetType === "LINE_ITEM" &&
+        application?.targetSelection !== "ALL" &&
+        Number(alloc.discountedAmount?.amount) > minAllocated
+      );
+    }),
   );
   if (!discountActive) return NO_CHANGES;
 
