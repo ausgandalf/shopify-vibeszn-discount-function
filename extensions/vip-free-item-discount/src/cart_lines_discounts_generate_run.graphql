@@ -1,0 +1,41 @@
+# Variables ($excludedProductTags / $excludedCustomerTags) are populated from
+# the discount's configuration metafield (see [extensions.input.variables] in
+# shopify.extension.toml). Defaults of [] keep the query valid before a merchant
+# has saved any settings.
+query Input(
+  $excludedProductTags: [String!]! = []
+  $excludedCustomerTags: [String!]! = []
+) {
+  discount {
+    discountClasses
+    metafield(namespace: "$app:vip-free-item", key: "function-configuration") {
+      value
+    }
+  }
+  cart {
+    buyerIdentity {
+      customer {
+        # true if the customer carries any excluded tag (e.g. "usedcode")
+        isExcluded: hasAnyTag(tags: $excludedCustomerTags)
+      }
+    }
+    lines {
+      id
+      quantity
+      cost {
+        amountPerQuantity {
+          amount
+        }
+      }
+      merchandise {
+        __typename
+        ... on ProductVariant {
+          product {
+            # true if the product carries any excluded tag (e.g. "nodiscount")
+            isExcluded: hasAnyTag(tags: $excludedProductTags)
+          }
+        }
+      }
+    }
+  }
+}

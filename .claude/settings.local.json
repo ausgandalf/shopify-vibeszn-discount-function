@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(shopify version *)",
+      "Bash(cargo --version)",
+      "PowerShell(Write-Output \"node: $\\(try { node -v } catch { 'none' }\\)\"; Write-Output \"npm: $\\(try { npm -v } catch { 'none' }\\)\"; Write-Output \"shopify: $\\(try { \\(shopify version\\) } catch { 'none' }\\)\"; Write-Output \"cargo: $\\(try { cargo --version } catch { 'none' }\\)\")",
+      "WebFetch(domain:shopify.dev)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "PowerShell(Get-ChildItem -Recurse -File -Path \"D:\\\\projects\\\\adam\\\\extension\" | Where-Object { $_.FullName -notmatch 'node_modules' } | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\projects\\\\adam\\\\extension\\\\\",\"\"\\) } | Sort-Object)",
+      "PowerShell(npm install 2>&1)",
+      "PowerShell(npm exec -- shopify app function typegen --path extensions/vip-free-item-discount 2>&1)",
+      "PowerShell(shopify app generate extension --help 2>&1)"
+    ]
+  }
+}

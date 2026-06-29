@@ -1,0 +1,28 @@
+# Configuration (which rate names to hide) is read from a metafield on the
+# delivery customization itself — set once via deliveryCustomizationCreate
+# (see scripts/create-delivery-customization.md).
+query Input {
+  deliveryCustomization {
+    metafield(namespace: "$app:hide-free-shipping", key: "function-configuration") {
+      value
+    }
+  }
+  cart {
+    lines {
+      # The delivery customization API CANNOT read discount codes. We instead
+      # detect that a product discount (the "free item" offer) is active by the
+      # presence of a line-level discount allocation.
+      discountAllocations {
+        allocatedAmount {
+          amount
+        }
+      }
+    }
+    deliveryGroups {
+      deliveryOptions {
+        handle
+        title
+      }
+    }
+  }
+}

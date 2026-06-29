@@ -1,0 +1,30 @@
+api_version = "2026-04"
+
+[[extensions]]
+# Merchant-facing name lives in locales/en.default.json
+name = "t:name"
+handle = "vip-free-item-discount"
+uid = "a617ea3d-bf02-12a4-19ca-6357321c5daa7bdfc214"
+type = "function"
+description = "t:description"
+
+  [[extensions.targeting]]
+  target = "cart.lines.discounts.generate.run"
+  input_query = "src/cart_lines_discounts_generate_run.graphql"
+  export = "cart-lines-discounts-generate-run"
+
+  [extensions.build]
+  command = ""
+  path = "dist/function.wasm"
+
+  # Links this function to its merchant-facing settings UI (the admin block in
+  # the vip-free-item-settings extension). The settings form appears on the
+  # discount details page when a merchant uses this function.
+  [extensions.ui]
+  handle = "vip-free-item-settings"
+
+  # Injects the configuration metafield's top-level JSON keys into the input
+  # query as GraphQL variables (e.g. $excludedProductTags, $excludedCustomerTags).
+  [extensions.input.variables]
+  namespace = "$app:vip-free-item"
+  key = "function-configuration"

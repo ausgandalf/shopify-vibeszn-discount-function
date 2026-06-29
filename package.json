@@ -1,0 +1,17 @@
+{
+  "name": "adam-script-replacement",
+  "private": true,
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "shopify app dev",
+    "deploy": "shopify app deploy",
+    "config:link": "shopify app config link",
+    "generate": "shopify app generate extension"
+  },
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-reconciler": "^0.33.0"
+  }
+}

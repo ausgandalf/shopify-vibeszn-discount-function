@@ -1,0 +1,4 @@
+{
+  "name": "Hide free shipping for VIP code",
+  "description": "Hides configured shipping rates when the free-item discount is active on the cart."
+}

@@ -1,0 +1,13 @@
+api_version = "2025-07"
+
+[[extensions]]
+name = "t:name"
+handle = "vip-free-item-settings"
+uid = "3958e5a6-2318-5122-c8a9-41749dd2be1060edafe2"
+type = "ui_extension"
+
+  [[extensions.targeting]]
+  module = "./src/DiscountFunctionSettings.jsx"
+  # Renders on the discount details page when a merchant creates/edits a
+  # discount powered by the vip-free-item-discount function.
+  target = "admin.discount-details.function-settings.render"
