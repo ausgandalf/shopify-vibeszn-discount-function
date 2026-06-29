@@ -12,7 +12,7 @@
   "dependencies": {
     "@preact/signals": "^2.9.2",
     "@shopify/shopify_function": "~2.0.0",
-    "@shopify/ui-extensions": "~2026.01.0",
+    "@shopify/ui-extensions": "2026.7.0-rc.7",
     "preact": "^10.29.3",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
