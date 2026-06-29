@@ -1,6 +1,6 @@
 import "@shopify/ui-extensions/preact";
 import { render } from "preact";
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 
 const NAMESPACE = "$app:vip-free-item";
 const KEY = "function-configuration";
@@ -18,7 +18,7 @@ export default async () => {
 };
 
 function App() {
-  const { applyMetafieldChange, data } = shopify;
+  const { applyMetafieldChange, data, query } = shopify;
 
   const initial = parseConfig(
     data?.metafields?.find((metafield) => metafield.key === KEY)?.value,
@@ -33,6 +33,24 @@ function App() {
   const [nearFreePrice, setNearFreePrice] = useState(String(initial.nearFreePrice));
   const [productLimit, setProductLimit] = useState(String(initial.productLimit));
   const [discountMessage, setDiscountMessage] = useState(initial.discountMessage);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState();
+
+  // The metafield DEFINITION (with admin read/write access) must exist on the
+  // DISCOUNT owner type before applyMetafieldChange is allowed to write the
+  // config. Create it once if it's missing.
+  useEffect(() => {
+    (async () => {
+      try {
+        await ensureMetafieldDefinition(query);
+      } catch (e) {
+        setError(String(e?.message ?? e));
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   async function onSubmit() {
     await applyMetafieldChange({
@@ -58,6 +76,10 @@ function App() {
     setDiscountMessage(initial.discountMessage);
   }
 
+  if (loading) {
+    return <s-text>Loading…</s-text>;
+  }
+
   return (
     <s-function-settings
       onSubmit={(event) => {
@@ -68,6 +90,7 @@ function App() {
       <s-heading>Free item offer</s-heading>
       <s-section>
         <s-stack gap="base">
+          {error ? <s-banner tone="critical">{error}</s-banner> : null}
           <s-text-field
             label="Excluded product tags (comma-separated)"
             name="excludedProductTags"
@@ -103,6 +126,51 @@ function App() {
       </s-section>
     </s-function-settings>
   );
+}
+
+async function ensureMetafieldDefinition(query) {
+  const getDefinition = `#graphql
+    query GetMetafieldDefinition {
+      metafieldDefinitions(
+        first: 1
+        ownerType: DISCOUNT
+        namespace: "${NAMESPACE}"
+        key: "${KEY}"
+      ) {
+        nodes { id }
+      }
+    }`;
+
+  const existing = await query(getDefinition);
+  if (existing?.data?.metafieldDefinitions?.nodes?.length > 0) {
+    return;
+  }
+
+  const createDefinition = `#graphql
+    mutation CreateMetafieldDefinition($definition: MetafieldDefinitionInput!) {
+      metafieldDefinitionCreate(definition: $definition) {
+        createdDefinition { id }
+        userErrors { field message }
+      }
+    }`;
+
+  const result = await query(createDefinition, {
+    variables: {
+      definition: {
+        name: "VIP free item configuration",
+        namespace: NAMESPACE,
+        key: KEY,
+        type: "json",
+        ownerType: "DISCOUNT",
+        access: { admin: "MERCHANT_READ_WRITE" },
+      },
+    },
+  });
+
+  const userErrors = result?.data?.metafieldDefinitionCreate?.userErrors ?? [];
+  if (userErrors.length > 0) {
+    throw new Error(userErrors.map((e) => e.message).join("; "));
+  }
 }
 
 function parseConfig(value) {
