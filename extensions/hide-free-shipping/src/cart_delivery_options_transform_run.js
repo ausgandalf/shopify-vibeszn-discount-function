@@ -1,36 +1,56 @@
 /**
  * Replacement for the legacy "Shipping ignores free shipping" Shopify Script.
  *
- * Legacy behaviour: when the cart used discount code FREEVIP, the named shipping
- * rates ("free domestic", "Free International") were removed so free shipping
- * could not be stacked with the free-item offer.
+ * Identifies OUR free-item discount by the app-reserved metafield it carries
+ * ($app:vip-free-item/function-configuration), surfaced on each line's
+ * discountApplication. That metafield's JSON also holds `hideRateNames` (edited
+ * in the discount settings form), so all config lives on the discount.
  *
- * Functions approach: the delivery customization API does NOT expose the applied
- * discount code, but each line's discountApplication exposes the discount's own
- * metafield. Our free-item discount is the only one carrying
- * $app:vip-free-item/function-configuration, so:
- *   - its presence identifies OUR offer precisely (order-wide discounts and
- *     other product discounts never carry it), and
- *   - its JSON value holds the merchant-edited `hideRateNames`.
- *
- * Result: ALL configuration is edited in the discount settings form in admin —
- * no hosting, no separate delivery-customization config metafield.
+ * NOTE: console.log output is written to the function run logs — view with
+ * `shopify app dev` (live) or in the app's function run history. Remove the logs
+ * once the behavior is confirmed.
  */
 
 const NO_CHANGES = { operations: [] };
 
 export function cartDeliveryOptionsTransformRun(input) {
-  // Find OUR free-item discount's config, carried on its discountApplication.
-  const configValue = findFreeItemConfig(input.cart.lines);
-  if (configValue == null) return NO_CHANGES; // our offer isn't active
+  const lines = input.cart.lines || [];
+
+  // --- DEBUG: dump what the function actually received ---
+  const allocationsDump = lines.map((line, i) => ({
+    line: i,
+    allocations: (line.discountAllocations || []).map((a) => ({
+      hasMarker: a.discountApplication?.freeItemConfig != null,
+      markerValue: a.discountApplication?.freeItemConfig?.value ?? null,
+    })),
+  }));
+  const optionTitles = (input.cart.deliveryGroups || []).flatMap((g) =>
+    (g.deliveryOptions || []).map((o) => o.title),
+  );
+  console.log(
+    "[hide-free-shipping] lines:",
+    lines.length,
+    "| allocations:",
+    JSON.stringify(allocationsDump),
+    "| optionTitles:",
+    JSON.stringify(optionTitles),
+  );
+  // --- end DEBUG ---
+
+  const configValue = findFreeItemConfig(lines);
+  if (configValue == null) {
+    console.log("[hide-free-shipping] no free-item marker found -> no changes");
+    return NO_CHANGES;
+  }
 
   const config = parseConfig(configValue);
   const hideRateNames = (config.hideRateNames || []).map(normalize).filter(Boolean);
+  console.log("[hide-free-shipping] hideRateNames:", JSON.stringify(hideRateNames));
   if (hideRateNames.length === 0) return NO_CHANGES;
 
   const operations = [];
-  for (const group of input.cart.deliveryGroups) {
-    for (const option of group.deliveryOptions) {
+  for (const group of input.cart.deliveryGroups || []) {
+    for (const option of group.deliveryOptions || []) {
       if (hideRateNames.includes(normalize(option.title))) {
         operations.push({
           deliveryOptionHide: { deliveryOptionHandle: option.handle },
@@ -39,6 +59,7 @@ export function cartDeliveryOptionsTransformRun(input) {
     }
   }
 
+  console.log("[hide-free-shipping] hiding", operations.length, "option(s)");
   return operations.length > 0 ? { operations } : NO_CHANGES;
 }
 
