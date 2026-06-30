@@ -104,7 +104,7 @@ function App() {
           <s-paragraph>
             <s-text font-weight="bold">Free item with a code. </s-text>
             <s-text>
-              Apply a discount code / cheapest eligible item drops to near-free. You control products, customers, quantity, price, and messaging.
+              Apply a discount code, then the cheapest eligible item drops to near-free. You control products, customers, quantity, price, and messaging.
             </s-text>
           </s-paragraph>
           <s-paragraph>
