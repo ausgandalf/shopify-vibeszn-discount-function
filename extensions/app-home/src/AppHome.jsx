@@ -98,19 +98,19 @@ function App() {
         <s-stack gap="base">
           <s-paragraph>
             <s-text>
-              Two automatic checkout behaviors — configured from the discount itself:
+              Two automatic checkout behaviors - configured from the discount itself:
             </s-text>
           </s-paragraph>
           <s-paragraph>
             <s-text font-weight="bold">Free item with a code. </s-text>
             <s-text>
-              Apply a discount code → cheapest eligible item drops to near-free. You control products, customers, quantity, price, and messaging.
+              Apply a discount code / cheapest eligible item drops to near-free. You control products, customers, quantity, price, and messaging.
             </s-text>
           </s-paragraph>
           <s-paragraph>
             <s-text font-weight="bold">Hide free shipping while active. </s-text>
             <s-text>
-              When the "VibeSzn — Free Item with Code" discount applies, selected shipping rates are hidden — preventing the freebie from stacking with free shipping.
+              When the "VibeSzn - Free Item with Code" discount applies, selected shipping rates are hidden - preventing the freebie from stacking with free shipping.
             </s-text>
           </s-paragraph>
         </s-stack>
@@ -121,8 +121,8 @@ function App() {
           <s-paragraph>
             <s-text>
               Turn this on to let the app remove your chosen shipping rates at
-              checkout whenever the "VibeSzn — Free Item with Code" discount is active. The rates it hides come from the “Shipping rates to
-              hide” field on your discount.
+              checkout whenever the "VibeSzn - Free Item with Code" discount is active. The rates it hides come from the [Shipping rates to
+              hide] field on your discount.
             </s-text>
           </s-paragraph>
 
@@ -164,7 +164,7 @@ function App() {
             <s-paragraph>
               <s-text>&nbsp;&nbsp;&nbsp;Open </s-text>
               <s-link href="shopify://admin/discounts">Discounts</s-link>
-              <s-text> → Create discount → choose “VibeSzn — Free Item with Code”.</s-text>
+              <s-text> / Create discount / choose [VibeSzn - Free Item with Code].</s-text>
             </s-paragraph>
           </s-stack>
           <s-paragraph>
@@ -200,7 +200,7 @@ function App() {
           </s-paragraph>
           <s-paragraph>
             <s-text>
-              The shipping hide is precise: it fires only for "VibeSzn — Free Item with Code" discount, not for
+              The shipping hide is precise: it fires only for "VibeSzn - Free Item with Code" discount, not for
               order-wide discounts or other promotions.
             </s-text>
           </s-paragraph>
